@@ -1,7 +1,10 @@
 package br.com.aws.s3;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,17 +19,24 @@ import java.util.List;
 public class AwsS3Application {
 
 	public static void main(String[] args) {
-		//SpringApplication.run(AwsS3Application.class, args);
-		String bucketName = "marcelo-test-bucket"; // tem que estar criado o bucket na aws
+		SpringApplication.run(AwsS3Application.class, args);
+	}
 
-		
-		Region region = Region.SA_EAST_1;
-		S3Client s3 = S3Client.builder()
-				.region(region)
-				.build();
 
-		listBucketObjects(s3, bucketName);
-		s3.close();
+	@Bean
+	public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+		return args -> {
+			String bucketName = "marcelo-test-bucket"; // tem que estar criado o bucket na aws
+
+
+			Region region = Region.SA_EAST_1;
+			S3Client s3 = S3Client.builder()
+					.region(region)
+					.build();
+
+			listBucketObjects(s3, bucketName);
+			s3.close();
+		};
 	}
 
 	public static void listBucketObjects(S3Client s3, String bucketName ) {

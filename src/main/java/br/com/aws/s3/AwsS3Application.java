@@ -6,14 +6,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.waiters.WaiterResponse;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.waiters.S3Waiter;
-import software.amazon.awssdk.core.waiters.Waiter;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootApplication
 public class AwsS3Application {
@@ -31,11 +33,25 @@ public class AwsS3Application {
 
             S3Client s3Client = createS3Client();
 
-            createBucket(bucketName, s3Client);
+            createFileBucket(bucketName,s3Client);
+
+            //createBucket(bucketName, s3Client);
 
             //listBucketObjects(s3, bucketName);
             s3Client.close();
         };
+    }
+
+    private static void createFileBucket(String bucketName,S3Client s3Client){
+        S3Waiter waiter = s3Client.waiter();
+        PutObjectRequest putOb = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(new Date().toString() + ".txt")
+                .build();
+
+        s3Client.putObject(putOb, RequestBody.empty());
+        System.out.println("create file succefully");
+
     }
 
     private static void createBucket(String bucketName, S3Client s3Client) {
